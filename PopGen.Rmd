@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Hardy-Weinberg equilibrium"
+title: "Part 2: Hardy-Weinberg equilibrium"
 author: "Arslan A. Zaidi"
 date: "2023-07-17"
 output:
@@ -15,7 +15,7 @@ library(ggplot2)
 
 # Introduction
 
-The purpose of this guide is to illustrate the Hardy-Wenberg principle through simulations in R. The guide assumes that you have a basic knowledge of genetics.
+The purpose of this guide is to illustrate the Hardy-Wenberg principle through simulations in R. The guide assumes that you have a basic knowledge of genetics and have completed Part 1 of the module.
 
 # Some basic terminology 
 
@@ -55,7 +55,7 @@ fg = 1-fa
 # we code the genotypes numerically for convenience: A -> 1 and G -> 0
 # This coding indicates the presence/absence of the A allele
 
-# the sample function draws from the different choices given
+# the sample function draws at random from the different choices given
 # based on some probability
 # Draw the first allele
 x1 = sample(c(0,1), 
@@ -72,12 +72,9 @@ x2 = sample(c(0,1),
 # Dipolid genotype = no. of copies (out of 2) of the A allele
 x = x1 + x2
 
-#proportion of each genotype
-#remember GG -> 0, AG -> 1, AA -> 2
-table(x)/ninds
-
 ```
 
+**Q.** Use your R skills to calculate the proportion of each genotype. Hint: you can use the "which()" and "length()" functions.
 
 **Q.** Is there a pattern? Why do you think that is? Does the result change if you rerun the last block of code? Does it change a lot or little?
 
@@ -92,7 +89,7 @@ Try rerunning the last block of code a number of times with a larger sample size
 
 **Q.** Is the pattern more apparent? Are the values more consistent? Why do you think that is? Do they converge to some particular set of values?
 
-Let's do this more systematiclaly by replicating the result multiple times and averaging over replicates. Let's also try a different starting allele frequency.
+Let's do this more systematically by replicating the result multiple times and averaging over replicates. Let's also try a different starting allele frequency.
 
 ```{r}
 
@@ -118,7 +115,7 @@ create_genotype = function(ninds, fa){
   x = x1 + x2
   # provide an output using return()
   #prop. of GG genotypes
-  n.gg = mean(x == 0)
+  n.gg = mean(x == 0) # another way to calculate proportions
   n.ga = mean(x == 1)
   n.aa = mean(x == 2)
   return(c(n.gg, n.ga, n.aa))
@@ -141,29 +138,24 @@ apply(mat, 2, mean)
 
 **Q.** Is there a pattern? Can you guess how these numbers might be related to the allele frequency? Don't move on if you haven't figured this out yet.
 
-Let's try calcualating the genotype frequencies for different allele frequencies and plotint the result.
+Let's try calculating the genotype frequencies for different allele frequencies and plotting the result.
 
 ```{r}
 
 #setup a vector with allele frequencies ranging from 0 to 1
 f = seq(0, 1, 0.1)
-mat1 = matrix(NA, nrow = length(f), ncol = 3)
-for(j in 1:length(f)){
-  mat = matrix(NA, nrow = 1000, ncol = 3)
-  for(i in 1:1000){
-    #use the function to run the block of code
-    mat[i,] = create_genotype(fa = f[j], ninds = 1000)
-  }
-  
-  #calculate the mean genotype across replicates
-  mat1[j,] = apply(mat, 2, mean)
+mat = matrix(NA, nrow = length(f), ncol = 3)
+for(i in 1:length(f)){
+    mat[i,] = create_genotype(fa = f[i], ninds = 1000)
 }
 
-mat1 = data.frame(mat1)
-colnames(mat1) = c("GG","GA","AA")
-mat1$freq = f
+#convert to dataframe
+mat = data.frame(mat)
+colnames(mat) = c("GG","GA","AA")
+mat$freq = f
 
-ggplot(mat1)+
+#plot
+ggplot(mat)+
   geom_line(aes(freq, GG), color = "blue")+
   geom_line(aes(freq, GA), color = "green")+
   geom_line(aes(freq, AA), color = "red")+
@@ -175,14 +167,14 @@ ggplot(mat1)+
 
 **Q.** Take a look at this plot and describe what's going on.
 
-That you can predict the genotype frequencies in a population from the allele frequencies is part of the Hardy-Weinberg equilibrium. This principle states that but if:
+That you can predict the genotype frequencies in a population from the allele frequencies is part of the Hardy-Weinberg equilibrium (HWE). Bet there's a blast from the past you never thought you'd be hearing again. This principle states that but if:
 
 1. The population is mating randomly
-2. The population size is large
+2. The population size is large 
 3. There is no mutation
 4. There is no natural selection
 
-Then, the frequency of the GG, AG, and AA genotypes are expected to be equal to: $f_{GG} = f_G^2$, $f_{GA} = 2f_Gf_A$, and $f_{AA} = f_A^2$. sINCE $f_A = 1 - f_G$, we can simplify this to: 
+Then, the frequency of the GG, AG, and AA genotypes are expected to be equal to: $f_{GG} = f_G^2$, $f_{GA} = 2f_Gf_A$, and $f_{AA} = f_A^2$. Since $f_A = 1 - f_G$, we can simplify this to: 
 
 $f_{GG} = (1 - f_A)^2$, $f_{GA} = 2f_A(1-f_G)$, and $f_{AA} = f_A^2$
 
@@ -192,7 +184,7 @@ That's exactly what the lines in the previous plot show. Let's test this out by 
 ```{r}
 
 #the alpha aesthetic makes the lines more transparent so we can see the dotted lines
-ggplot(mat1)+
+ggplot(mat)+
   geom_line(aes(freq, GG), color = "blue", alpha = 0.1)+
   geom_line(aes(freq, GA), color = "green", alpha = 0.1)+
   geom_line(aes(freq, AA), color = "red", alpha = 0.1)+
@@ -206,11 +198,77 @@ ggplot(mat1)+
   labs(x = "Frequency of A allele", 
        y = "Genotype frequency")
 
+#notice how we have layered multiple plots on top of each other.
+
 ```
 
-As you can see, the Hardy-Weinberg principle predicts the 
+**Q.** Do the observed genotype frequencies overlap with those predicted by HWE? 
+
+Try rerunning the last TWO blocks of code but with 10 individuals instead of 1,000.
+
+```{r}
+
+#code here
 
 
+#setup a vector with allele frequencies ranging from 0 to 1
+f = seq(0, 1, 0.1)
+mat = matrix(NA, nrow = length(f), ncol = 3)
+for(i in 1:length(f)){
+    mat[i,] = create_genotype(fa = f[i], ninds = 10)
+}
+
+#convert to dataframe
+mat = data.frame(mat)
+colnames(mat) = c("GG","GA","AA")
+mat$freq = f
+
+ggplot(mat)+
+  geom_line(aes(freq, GG), color = "blue", alpha = 0.1)+
+  geom_line(aes(freq, GA), color = "green", alpha = 0.1)+
+  geom_line(aes(freq, AA), color = "red", alpha = 0.1)+
+  geom_line(aes(freq, freq^2), 
+            color = "blue", linetype = "dotted")+
+  geom_line(aes(freq, 2*freq*(1-freq)), 
+            color = "green", linetype = "dotted")+
+  geom_line(aes(freq, (1-freq)^2), 
+            color = "red", linetype = "dotted")+
+  theme_classic()+
+  labs(x = "Frequency of A allele", 
+       y = "Genotype frequency")
+
+
+```
+
+**Q.** What do you observe? Why do you think this is? Hint: this is related to one of the assumptions of HWE.
+
+You see, we can use mathematics to approximate what goes on in populations just like we did by approximating the expected genotype frequencies in the population from allele frequencies. Obviously, the assumptions are important and can sometimes breakdown. But first we must understand highly idealized situations as a place to start.
+
+The Hardy-Weinberg equilibrium does not only give us a way to predict genotype frequencies from allele frequencies but also predicts that allele frequencies will NOT change in populations over time if the four conditions are met. This again provides us a null model to study evolutionary processes, which are all about change!
+
+The function we wrote to simulate genotypes based on allele frequencies is kind of clunky and R has built-in functions to do this: rbinom(). To simulate the (diploid) genotypes of 100 individuals from a population where the allele frequency is 0.15, we do the following:
+
+```{r}
+
+
+#rbinom takes 3 arguments
+#n = no. of individuals
+#size = ploidy
+#prob = allele frequency
+x = rbinom(100, 2, 0.15)
+
+#output the frequency of each genotype
+mean(x == 0)
+mean(x == 1)
+mean(x == 2)
+
+#OR we could use the table() function
+table(x)/100
+
+```
+
+
+Congrats, you're done with Part 2! You can move on to the 3rd part. As before, save your work, close "PopGen.Rmd", go to "Session > Clear Workspace", and then "Session > Restart R"
 
 
 

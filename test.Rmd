@@ -1,0 +1,226 @@
+---
+title: "A brief introduction to R"
+author: "Arslan A. Zaidi"
+date: "2023-07-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Setting up
+
+In this module, you will gain a basic introduction to R, the open-source, widely-used programming language commonly used for statistical analysis, and ggplot2, a popular library for plotting.
+
+You can download and learn more about R here:
+
+http://www.r-project.org
+
+We will use R inside Rstudio on the Cloud, which provides a user-friendly graphical interface with many other convenient functions.
+
+To use Rstudio Cloud, visit https://posit.cloud/. Click on "Sign up", then "Learn More" under the "Free" option, and then finally "Sign up" again. Use either your GitHub or Google account to create an account and log in.
+
+You will be taken to "Your Workspace" where you will click on "New Project" and then "New Project from Git Repository". This will put you inside the "Itasca_module_2023" Project.
+
+You will see three windows. To your left will be the "Console", on your top right will be the "Environment", and on your bottom right will be the "Files", which lists all the files and directories inside the project. Click on "Intro.Rmd", which should open another window on your top left.
+
+The file you just opened is an "Rmarkdown" file. It contains the text and code used to compile this tutorial. The code is shown in blocks encapsulated by three ticks. You can run the entire block of code by hitting the green "play" arrow at the top right of the code block. You can also run specific pieces of code by selecting it and hitting "command + enter". The code will output the results both in the markdown file and in the Console.
+
+You should follow the text, examine the code, and try to run it. Then, do the exercises yourself. I encourage you to partner up if necessary to help each other.
+
+# Basic R
+
+R can be used as a calculator:
+
+```{r}
+
+# addition; subtraction
+# you can write separate commands on the same line by using a semi-colon
+2+2; 4-4
+
+#multiplication
+8*9
+
+#division
+1e3/10
+
+#exponents and logs
+2^8; sqrt(256); log(100, base = 10); log(1, base = exp(1))
+
+#combination
+(2^8) / (sqrt(2)+2 +log(10))
+
+#You can try more by typing ?"/"
+
+```
+
+
+You can also assign values to variables and use those.
+
+```{r}
+
+a = 4+5; b = 2
+print(a)
+
+a*24
+
+a + b
+
+a^b
+
+#special variables and built-in constants
+exp(1); pi; pi-0.1341593; pi^2
+
+#variables don't just have to be numbers
+a = "Hello World"; a; print(a)
+
+
+```
+
+## Loops
+
+Loops are one of the most important things we can do in programming. We can automate a lot of things with loops.
+
+A loop involves some kind of counter to loop over and some action to be performed for each step of the counter. There are two main kinds of loops: "for" loops and "while" loops.
+
+```{r}
+
+#For loop
+for( i in 1:5 ){
+  print(i^2)
+}
+
+#We can also add conditions
+for( i in 1:5 ){
+  if( i < 2 ){
+    print(i)}else{
+      print(i + 1)
+    }
+}
+
+#While loop
+i<-0
+while( i < 5 ){
+  print(i)
+  i=i+1
+}
+
+
+```
+
+### Functions
+
+A function is a block of code which only runs when it is called. You can pass data, known as parameters, into a function. A function can return data as a result. 
+
+```{r}
+
+#Built-in functions
+max(0, 2, 5); min(0, 2, 5); mean(0:200)
+
+#the paste() function pastes characters with other characters or numbers
+paste("This is the square root of 2: ", sqrt(2), sep = "")
+
+
+```
+
+You can learn more about built-in functions simply by typing "?" followed by the function or "help" followed by the function. Try it.
+
+
+You can use one of the built-in functions or write your own.
+
+```{r}
+
+#Custom function 
+custom_function = function(x){
+  if(x < 100){
+    return(x)
+  }
+}
+
+custom_function(10); custom_function(100)
+
+```
+
+
+You can apply a function to a number of observations simultaneously, e.g. over the elements of a vector by using the "sapply" function, which supplies (haha get it) the function to all elements.
+
+```{r}
+
+#sapply requires 2 arguments
+#1. the vector to loop over
+#2. the function to apply - this could be a built-in or custom function
+a = c(1:10)
+b = sapply(a, custom_function)
+b
+
+```
+
+
+### Data structures
+
+R has the flexibility of working with different types of data structures such as vectors, matrices, lists, and data.frames. They have their different uses and pros and cons so I encourage you to read about them. I'll present a few examples here that are relevant to the workshop.
+
+```{r}
+
+####### Vectors ############
+# vectors are one-dimensional lists of elements
+# you can concatenate both characters and numbers using "c()"
+a = c(2, "f","hello",10)
+
+# you can access specific elements of a vector using index
+a[3]; a[2:4]
+
+# changing an element
+a[3] = "bye"
+
+b = c(1:10); d = c(1, 2, 10, 5:6)
+
+```
+
+
+```{r}
+
+########### Matrices ###########
+# matrices are two dimensional objects
+mat = matrix(c(1:20), 5, 4)
+mat
+
+#accessing specific rows and columns
+#first number indicates row and second number indicates column 
+mat[2,3]
+
+#accessing a row
+mat[4,]
+
+#accessing a column
+mat[,2]
+
+```
+
+
+```{r}
+
+########### Data frames ###########
+# data frames are more formatted tables with named columns
+dat <- data.frame (
+  Training = c("Strength", "Stamina", "Other"),
+  Pulse = c(100, 150, 120),
+  Duration = c(60, 30, 45)
+)
+
+dat
+
+# accessing specific columns
+dat$Training; dat['Training']
+
+# operating on a column
+dat$Duration/5
+
+
+
+```
+

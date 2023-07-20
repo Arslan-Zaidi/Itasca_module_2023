@@ -1,5 +1,5 @@
 ---
-title: "Learning quantitative genetics through simulation"
+title: "Part 3: Quantitative genetics through simulation"
 author: "Arslan A. Zaidi"
 date: "2023-07-17"
 output:
@@ -17,7 +17,7 @@ library(ggbeeswarm)
 
 # Introduction
 
-Our goal here is to understand to use simulations to understand how genetics influences phenotypic variation and how we learn about the genetic basis of phenotypic variation. Go through the guide below, run the code, and try to answer the questions below.
+Our goal here is to understand to use simulations to understand how genetics influences phenotypic variation and how we learn about the genetic basis of phenotypic variation. Go through the guide, run the code, and try to answer the questions.
 
 The phenotype of any individual is a product of both their genetics and environment. In other words, we can refer to the phenotypic value ($y$) of an individual as a sum of their genetic value ($g$) and their environmental value ($e$).
 
@@ -304,9 +304,15 @@ ggplot(dat) +
 ```
 
 
-# Association studies
+This mostly concludes the things that I wanted to present in this module. Congrats! You're free to go over the material again with a different set of parameters and try out some simulations of your own. 
 
-One way to discover which genes are important for a particular trait is to carry out association studies. Let's now simulate 100 loci, of which 10 are 'causal'. We say this to refer to loci that have effects on the trait. Let's also choose their effects so that some of them have larger effects than others.
+If you'd like to know more about how we discover genetic variants, you can keep going!
+
+# BONUS: Association studies
+
+One way to discover which genes are important for a particular trait is to carry out association studies. In association studies, we test if the genotype at a particular locus is associated with the trait that we are studying. For example, we could collect the heights of 100,000 people and then genotype them at millions of single nucleotide polymorphisms (SNPs) and ask at each SNP: is it "significantly associated" with the trait?
+
+Let's now simulate 100 loci, of which 10 are 'causal', the rest are not related to the trait at all. We say this to refer to loci that have effects on the trait. Let's also choose their effects so that some of them have larger effects than others.
 
 
 ```{r}
@@ -323,12 +329,14 @@ for(i in 1:nloci){
 }
 
 #standardize genotypes so they all have variance of 1 
+#the scale() function does this
 x = apply(x, 2, scale)
 
 #create a vector of 0 effect sizes
+#the rep() function does this
 b = rep(0, nloci)
 
-#select 5 of them at random to be 'causal'
+#select 5 of them at random to be 'causal' - they have nonzero effects
 ix = sample(c(1:100), ncausal, replace = FALSE)
 #give them effect sizes - ignore how we get these
 b[ix] = rnorm(ncausal, 0, sqrt(0.9/ncausal))
@@ -338,28 +346,56 @@ dat = data.frame(g = apply(x*b, 1, sum))
 dat$e = rnorm(ninds, mean = 0, sd = sqrt(0.1))
 dat$y = dat$g + dat$e
 
-hist(dat$y)
+#plot the distribution of the phenotype
+ggplot(dat, aes(y))+
+  geom_histogram()+
+  theme_classic()+
+  labs(x = "Phenotype", y = "Count")
 
 ```
 
 
-Now for each variant, test if it is associated with the trait.
+Now for each variant, test if it is associated with the trait. We do this using the lm() function, which runs a regression between two variables. In other words, it tests if y is associated with x.
 
 
 ```{r}
 
-b_hat = matrix(NA, nrow = 100, ncol = 2)
+#run the linear regression between the phenotype and the first locus 
+#we store the result in an object called "l1"
+l1 = lm(dat$y ~ x[,1])
+
+#the summary function provides a convenient way to look at the result
+summary(l1)
+
+```
+
+Look at the coefficients table, which is the thing we care about right now. We can access the table like so:
+
+```{r}
+
+summary(l1)$coefficients
+        
+```
+
+Here, the columns are as follows: regression coefficient, standard error of the slope, t-statitic, p-value
+
+The first row lists the values of the intercept and the second row lists the values of the slope. For now, we will just need the p-value of the slope, i.e., the 4th column of the 2nd row. But we need this for all SNPs. Let's do this with our good friend, the for-loop.
+
+```{r}
+
+#create an empty vector to store the results in
+b_hat = rep(NA, 100)
+#loop over each SNP, run lm(), and store the p-value
 for(i in 1:100){
   l1 = lm(dat$y ~ x[,i])
-  b_hat[i,1] = summary(l1)$coefficients[2,1]
-  b_hat[i,2] = summary(l1)$coefficients[2,4]
+  b_hat[i] = summary(l1)$coefficients[2,4]
 }
 
 #define p-value threshold to call a locus significantly associated with the trait
 pthresh = 0.05/100
 
 #which loci reach this threshold?
-which(b_hat[,2] < pthresh)
+which(b_hat < pthresh)
 
 ```
 
@@ -376,7 +412,9 @@ Repeat the last two blocks of code with a larger sample size. Start with 10,000 
 ```
 
 
-**Q.** Were you able to discover more? Why do you think that is? Were you able to discover any false positives?
+**Q.** Were you able to discover more? Why do you think that is?
+
+
 
 
 
