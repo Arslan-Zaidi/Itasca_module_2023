@@ -1,0 +1,374 @@
+---
+title: "A brief introduction to R"
+author: "Arslan A. Zaidi"
+date: "2023-07-17"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Setting up
+
+In this module, you will gain a basic introduction to R, the open-source, widely-used programming language commonly used for statistical analysis, and ggplot2, a popular library for plotting.
+
+You can download and learn more about R here:
+
+http://www.r-project.org
+
+We will use R inside Rstudio on the Cloud, which provides a user-friendly graphical interface with many other convenient functions.
+
+To use Rstudio Cloud, visit https://posit.cloud/. Click on "Sign up", then "Learn More" under the "Free" option, and then finally "Sign up" again. Use either your GitHub or Google account to create an account and log in.
+
+You will be taken to "Your Workspace" where
+
+
+
+# Basic R
+
+R can be used as a calculator:
+
+```{r}
+
+# addition; subtraction
+# you can write separate commands on the same line by using a semi-colon
+2+2; 4-4
+
+#multiplication
+8*9
+
+#division
+1e3/10
+
+#exponents and logs
+2^8; sqrt(256); log(100, base = 10); log(1, base = exp(1))
+
+#combination
+(2^8) / (sqrt(2)+2 +log(10))
+
+#You can try more by typing ?"/"
+
+```
+
+
+You can also assign values to variables and use those.
+
+```{r}
+
+a = 4+5; b = 2
+print(a)
+
+a*24
+
+a + b
+
+a^b
+
+#special variables and built-in constants
+exp(1); pi; pi-0.1341593; pi^2
+
+#variables don't just have to be numbers
+a = "Hello World"; a; print(a)
+
+
+```
+
+## Loops
+
+Loops are one of the most important things we can do in programming. We can automate a lot of things with loops.
+
+A loop involves some kind of counter to loop over and some action to be performed for each step of the counter. There are two main kinds of loops: "for" loops and "while" loops.
+
+```{r}
+
+#For loop
+for( i in 1:5 ){
+  print(i^2)
+}
+
+#We can also add conditions
+for( i in 1:5 ){
+  if( i < 2 ){
+    print(i)}else{
+      print(i + 1)
+    }
+}
+
+#While loop
+i<-0
+while( i < 5 ){
+  print(i)
+  i=i+1
+}
+
+
+```
+
+### Functions
+
+A function is a block of code which only runs when it is called. You can pass data, known as parameters, into a function. A function can return data as a result. 
+
+```{r}
+
+#Built-in functions
+max(0, 2, 5); min(0, 2, 5); mean(0:200)
+
+#the paste() function pastes characters with other characters or numbers
+paste("This is the square root of 2: ", sqrt(2), sep = "")
+
+
+```
+
+You can learn more about built-in functions simply by typing `?` followed by the function or `help` followed by the function. Try it.
+
+
+You can use one of the built-in functions or write your own.
+
+```{r}
+
+#Custom function 
+custom_function = function(x){
+  if(x < 100){
+    return(x)
+  }
+}
+
+custom_function(10); custom_function(100)
+
+```
+
+
+You can apply a function to a number of observations simultaneously, e.g. over the elements of a vector by using the "sapply" function, which supplies (haha get it) the function to all elements.
+
+```{r}
+
+#sapply requires 2 arguments
+#1. the vector to loop over
+#2. the function to apply - this could be a built-in or custom function
+a = c(1:10)
+b = sapply(a, custom_function)
+b
+
+```
+
+
+### Data structures
+
+R has the flexibility of working with different types of data structures such as vectors, matrices, lists, and data.frames. They have their different uses and pros and cons so I encourage you to read about them. I'll present a few examples here that are relevant to the workshop.
+
+```{r}
+
+####### Vectors ############
+# vectors are one-dimensional lists of elements
+# you can concatenate both characters and numbers using "c()"
+a = c(2, "f","hello",10)
+
+# you can access specific elements of a vector using index
+a[3]; a[2:4]
+
+# changing an element
+a[3] = "bye"
+
+b = c(1:10); d = c(1, 2, 10, 5:6)
+
+```
+
+
+```{r}
+
+########### Matrices ###########
+# matrices are two dimensional objects
+mat = matrix(c(1:20), 5, 4)
+mat
+
+#accessing specific rows and columns
+#first number indicates row and second number indicates column 
+mat[2,3]
+
+#accessing a row
+mat[4,]
+
+#accessing a column
+mat[,2]
+
+```
+
+
+```{r}
+
+########### Data frames ###########
+# data frames are more formatted tables with named columns
+dat <- data.frame (
+  Training = c("Strength", "Stamina", "Other"),
+  Pulse = c(100, 150, 120),
+  Duration = c(60, 30, 45)
+)
+
+dat
+
+# accessing specific columns
+dat$Training; dat['Training']
+
+# operating on a column
+dat$Duration/5
+
+
+
+```
+
+## Exercises
+
+**Q.** Compute $\frac{74+5}{(2⋅3)^5}$ and assign the name `calculation` to the result. Print `calculation`.
+
+```{r}
+
+#code here
+
+```
+
+**Q.** Define a vector `months` containing the numbers 29, 63, 7, 23, 84, 10 and 9. Compute a vector `years` from it by dividing months by 12. Print `years`.
+
+```{r}
+
+#code here
+
+```
+
+
+**Q.** In a fictitious medical study patients should be excluded from the study if they weigh more than 90 kg or if they are either younger than 18 years or older than 60 years. Define the variable age as age <- c(50, 17, 39, 27, 90) and the variable weight as weight <- c(80, 75, 92, 105, 60). Then write a logical statement involving these two variables that tests for the exclusion criteria. (Find help in chapter 1.6.1)
+
+```{r}
+
+
+
+```
+
+
+# Plotting
+
+R has basic plotting functionality. But we will use the ggplot package because it's much more flexible and let's face it, prettier. You can find more detailed information on [here](https://ggplot2-book.org/introduction.html).
+
+"All plots are composed of the data, the information you want to visualise, and a mapping, the description of how the data’s variables are mapped to aesthetic attributes. There are five mapping components:
+
+- A layer is a collection of geometric elements and statistical transformations. Geometric elements, geoms for short, represent what you actually see in the plot: points, lines, polygons, etc. Statistical transformations, stats for short, summarise the data: for example, binning and counting observations to create a histogram, or fitting a linear model.
+
+- Scales map values in the data space to values in the aesthetic space. This includes the use of colour, shape or size. Scales also draw the legend and axes, which make it possible to read the original data values from the plot (an inverse mapping).
+
+- A coord, or coordinate system, describes how data coordinates are mapped to the plane of the graphic. It also provides axes and gridlines to help read the graph. We normally use the Cartesian coordinate system, but a number of others are available, including polar coordinates and map projections.
+
+- A theme controls the finer points of display, like the font size and background colour."
+
+To load a package, use the library function. The mpg dataset is included in the package for practice. It includes information about the fuel economy of popular car models in 1999 and 2008, collected by the US Environmental Protection Agency, http://fueleconomy.gov.
+
+
+```{r}
+
+library(ggplot2)
+
+# the head() function allows you to see the first 6 lines 
+head(mpg)
+
+```
+
+
+Every ggplot2 plot has three key components:
+
+- Data,
+
+- A set of aesthetic mappings between variables in the data and visual properties, and
+
+- At least one layer which describes how to render each observation. Layers are usually created with a geom function.
+
+Let's create a scatterplot: 
+
+Data: mpg.
+Aesthetic mapping: engine size mapped to x position, fuel economy to y position.
+Layer: points.
+
+```{r}
+
+
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+
+
+```
+
+
+Pay attention to the structure of this function call: data and aesthetic mappings are supplied in ggplot(), then layers are added on with +. This is an important pattern, and as you learn more about ggplot2 you’ll construct increasingly sophisticated plots by adding on more types of components.
+
+Almost every plot maps a variable to x and y, so naming these aesthetics is tedious, so the first two unnamed arguments to aes() will be mapped to x and y.
+
+geom_point() specifies the type of plot you want to create. In this case, a "point" plot or scatterplot. Other types are histograms, density plots, line plots, bar plots, pie charts, etc. The aes() call can be placed within the geom_ as well. In fact, I prefer to do it this way. Let's try the same plot without explicitly stating x and y and putting aes() inside geom_point().
+
+```{r}
+
+ggplot(mpg) + 
+  geom_point(aes(displ, hwy))
+
+
+```
+
+
+I hate the grey background. Let's change it and also edit the axis labels.
+
+
+```{r}
+
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Fuel economy") # axis labels
+
+```
+
+
+You can customize the color, shape, and transparency of the points as well, either for all of them or grouped one or more factors in the data frame.
+
+```{r}
+
+# if you want to change the color of ALL points, place "color" outside aes()
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy), 
+             color = "blue") + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Fuel economy") # axis labels
+
+#You can provide hex codes for the colors as well
+#I personally like getting these from https://colorbrewer2.org/
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy), 
+             color = "#a6bddb") + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Fuel economy") # axis labels
+
+#if you want to change the color of points by some factor, place "color" inside aes()
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color = class)) + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Fuel economy") # axis labels
+
+```
+
+
+
+Let's try another plot - a histogram - of fuel economy. Histograms plot summarized data - the no. of observations within each bin. This calculation is all done automatically within ggplot. In contrast to scatterplots, histograms only require one variable, not both x and y.
+
+
+```{r}
+
+
+ggplot(mpg, aes(x = hwy)) + 
+  geom_histogram() + 
+  theme_classic() + # change theme
+  labs(x = "Fuel economy", y = "Count") # axis labels
+
+
+```
+
+
+

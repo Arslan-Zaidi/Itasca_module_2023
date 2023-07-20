@@ -1,0 +1,389 @@
+---
+title: "Learning quantitative genetics through simulation"
+author: "Arslan A. Zaidi"
+date: "2023-07-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(ggbeeswarm)
+
+```
+
+# Introduction
+
+Our goal here is to understand to use simulations to understand how genetics influences phenotypic variation and how we learn about the genetic basis of phenotypic variation. Go through the guide below, run the code, and try to answer the questions below.
+
+The phenotype of any individual is a product of both their genetics and environment. In other words, we can refer to the phenotypic value ($y$) of an individual as a sum of their genetic value ($g$) and their environmental value ($e$).
+
+$$y = g + e$$
+
+The genetic value itself is composed of two things: (i) the genetic makeup of the individual at a particular locus that is important for the phenotype, and (ii) *how* important that locus is for the trait. The second thing is called the **effect size** of the locus.
+
+Think of height for example. Imagine a locus with two alleles (A and G) that has some effect on height. You can either have 0 copies of the A allele (genotype GG), 1 copy (genotype GA), or 2 copies (AA). Having one copy of an A allele gives you an extra 0.5 inch over people who have two copies of the G allele. And having two copies of the A allele gives you an extra 1 inch. We can denote the effect of the A allele as being +0.5.
+
+**Q.** What is the mode of inheritance at this locus? I.e., are the two alleles co-dominant (additive) or is any of them recessive?
+
+# Monogenic traits
+
+Traditionally, traits which are determined by 1 locus were thought to be 'Mendelian'.
+
+Let's take a look at such a trait visually by simulating the phenotypes of some individuals for a trait that is only controlled by this one locus. Assume for now that the environment has no effect on the phenotype, i.e., $y = g$.
+
+
+```{r}
+
+#First simulate some genotypes for 1,000 individuals at this one locus
+#Assume that the frequency of the A allele is 0.35
+f = 0.35
+ninds=1000
+dat = data.frame(x = rbinom(n = ninds, size = 2, prob = f))
+
+#Now calculate the genetic value of each individual
+dat$g = NA
+#give individuals who have 0 copies of the A allele a value of 0, 
+#individuals with 1 copy a value of 0.5 and 
+#individuals with 2 copies a value of 1
+dat$g[dat$x == 0] = 0 
+dat$g[dat$x == 1] = 0.5 
+dat$g[dat$x == 2] = 1
+
+#can you think of a more efficient way to do this?
+
+#Take a look at the distribution of these genotypes
+ggplot(dat) + 
+  geom_point(aes(x = x, y = g))+
+  theme_classic()+
+  labs(x = "Genotype (no. of copies of A)", 
+       y = "Genetic value")
+
+
+```
+
+**Q.** How many different genotypes are possible? How many different genetic values? We simulated 1,000 individuals. Where are they all?
+
+**Q.** There appears to be a relationship between genotypes and genetic value. Can you guess what the value of the slope is? What is it called?
+
+Another way to look at these data is through a histogram.
+
+```{r}
+
+ggplot(dat) + 
+  geom_histogram(aes(x = g))+
+  theme_classic()+
+  labs(x = "Genentic values", 
+       y = "No. of individuals with this value")
+
+
+```
+
+**Q.** Is the distribution symmetric? Why or why not?
+
+Let's now assume the G allele is fully recessive. In other words, individuals who are heterozygous (AG) have the same genetic value as the individuals who are homozygous for the recessive allele (GG).
+
+Can you re-generate the scatter plot (Fig.) above for such a trait?
+
+```{r}
+
+#code here
+
+```
+
+
+**Q.** How and why is this different from the model where the alleles are additive?
+
+# Quantitative traits
+
+Now let's take 2 causal loci. Assume that the alleles at both loci are A/G, that they are additive, and the A allele always has a frequency of 0.35.
+
+An easier way to generate genetic values ($g$) from the genotypes ($x$) and effect size ($\beta$): 
+
+$$ g = \beta x$$
+
+```{r}
+
+#Let's create empty tables to store our data in.
+#This type of table is called matrix.
+nloci = 2
+x = matrix(NA, nrow = ninds, ncol = nloci) 
+
+#simulate the genetic values from 2 loci
+for(i in 1:nloci){
+  x[, i] = rbinom(n = ninds, size = 2, prob = f)
+}
+
+#effect size = 0.5
+b = .5
+dat = data.frame(g = apply(x*b, 1, sum))
+
+ggplot(dat)+
+  geom_histogram(aes(g))+
+  theme_classic()+
+  labs(x = "Genetic values",
+       y = "No. of individuals with this value")
+  
+
+```
+
+**Q.** How and why is this different from the situation where there was only one locus?
+
+Now rerun the last block of code but for 2, 5, 10, and 100 loci. 
+
+
+```{r}
+
+#code here
+
+```
+
+Traits like the one with 100 loci are called 'quantitative traits'. Can you guess why?
+
+**Q.** What do you observe going from 1-100 loci? Is there a pattern? Does it remind you of anything?
+
+**Q.** Is this because of the specific allele frequency we used? Try rerunning the above code with a different allele frequency to see if and how the distribution might be different for a different allele frequency.
+
+
+```{r}
+
+#code here
+
+```
+
+
+Now plot the relationship between the genotype at the first locus and the genetic value for the trait which is determined by 100 loci.
+
+
+```{r}
+
+#Let's create empty tables to store our data in.
+#This type of table is called matrix.
+nloci = 100
+x = matrix(NA, nrow = ninds, ncol = nloci) 
+
+#simulate the genetic values from 2 loci
+for(i in 1:nloci){
+  x[, i] = rbinom(n = ninds, size = 2, prob = f)
+}
+
+#effect size = 0.5
+b = .5
+dat = data.frame(ncopies = x[,1], 
+                  g = apply(x*b, 1, sum))
+
+ggplot(dat) + 
+  geom_beeswarm(aes(x = ncopies, y = g))+
+  theme_classic()+
+  labs(x = "Genotype at locus 1 (no. of copies of A)", 
+       y = "Genetic value")
+
+
+
+```
+
+**Q.** How and why is this different from the first figure, i.e., when only one locus was involved?
+
+**Q.** Can you work out the slope in this figure? Hint: calculate the average genetic value for each genotype.
+
+
+```{r}
+
+#code here
+
+```
+
+
+So far we have assumed that there are no environmental effects. In quantitative genetics, the environment typically refers to any and everything that is not 'genetic'. Let's add the environment to the mix to see how that changes things. We assume a simple environment which adds noise to the genetic value.
+
+# Heritability
+
+We return to the phenotypic model: $y = g + e$ and the situation where we only had one causal locus. But this time, add a very small amount of environmental noise.
+
+
+```{r}
+
+
+#First simulate some genotypes for 1,000 individuals at this one locus
+#Assume that the frequency of the A allele is 0.35
+f = 0.35
+nind = 1000
+dat = data.frame(x = rbinom(n = ninds, size = 2, prob = f))
+
+#Now calculate the genetic value of each individual
+dat$g = NA
+#give individuals who have 0 copies of the A allele a value of 0, 
+#individuals with 1 copy a value of 0.5 and 
+#individuals with 2 copies a value of 1
+dat$g[dat$x == 0] = 0 
+dat$g[dat$x == 1] = 0.5 
+dat$g[dat$x == 2] = 1
+
+#add some small environmental effect
+dat$e = rnorm(ninds, mean = 0, sd = 0.1)
+dat$y = dat$g + dat$e
+  
+#Take a look at the distribution of these genotypes
+ggplot(dat) + 
+  geom_beeswarm(aes(x = x, y = y))+
+  theme_classic()+
+  labs(x = "Genotype (no. of copies of A)", 
+       y = "Phenotype")
+
+
+```
+
+**Q.** What is the total variance in the phenotype? How much of that is due to the variance in genetic values?
+
+```{r}
+
+vp = var(dat$y) ## phenotypic variance
+vg = var(dat$g) ## genetic variance
+
+# proportion of phenotypic variance due to genetic variation
+h2 = vg/vp 
+
+paste("Phenotypic variance:", round(vp, 3))
+paste("Genetic variance:", round(vg, 3))
+paste("Heritability:", round(h2, 3))
+
+```
+
+The proportion of phenotypic variance that can be explained by genetic differences among individuals is called heritability.
+
+Sometimes people think of heritability as the degree to which a trait is 'genetic' -- some inherent property of the trait. But this is incorrect.
+
+Try a much larger effect of the environment and calculate heritability again.
+
+```{r}
+
+#add some small environmental effect
+dat$e = rnorm(ninds, mean = 0, sd = 10)
+dat$y = dat$g + dat$e
+
+vp = var(dat$y) ## phenotypic variance
+vg = var(dat$g) ## genetic variance
+
+# proportion of phenotypic variance due to genetic variation
+h2 = vg/vp 
+
+paste("Phenotypic variance:", round(vp, 3))
+paste("Genetic variance:", round(vg, 3))
+paste("Heritability:", round(h2, 3))
+
+
+```
+
+**Q.** Has the genetic variance changed? Does this change your thoughts on heritability?
+
+Let's plot the relationship between genotype at locus 1 and phenotype.
+
+```{r}
+  
+#Take a look at the distribution of these genotypes
+ggplot(dat) + 
+  geom_beeswarm(aes(x = x, y = y))+
+  theme_classic()+
+  labs(x = "Genotype (no. of copies of A)", 
+       y = "Phenotype")
+
+```
+
+**Q.** Does this look similar to the plot where we had the genotype of locus 1 on the x-axis and the phenotype (determined by 100 loci) on the y-axis? How and why are they similar/different?
+
+**Q.** Can you work out the slope of the figure? Is this the same as before?
+
+
+```{r}
+
+#code here
+
+```
+
+
+# Association studies
+
+One way to discover which genes are important for a particular trait is to carry out association studies. Let's now simulate 100 loci, of which 10 are 'causal'. We say this to refer to loci that have effects on the trait. Let's also choose their effects so that some of them have larger effects than others.
+
+
+```{r}
+
+f = 0.5
+ninds = 1e4    
+nloci = 100
+ncausal = 5
+x = matrix(NA, nrow = ninds, ncol = nloci) 
+
+#simulate the genotypes from 2 loci
+for(i in 1:nloci){
+  x[, i] = rbinom(n = ninds, size = 2, prob = f)
+}
+
+#standardize genotypes so they all have variance of 1 
+x = apply(x, 2, scale)
+
+#create a vector of 0 effect sizes
+b = rep(0, nloci)
+
+#select 5 of them at random to be 'causal'
+ix = sample(c(1:100), ncausal, replace = FALSE)
+#give them effect sizes - ignore how we get these
+b[ix] = rnorm(ncausal, 0, sqrt(0.9/ncausal))
+
+#calculate genetic values and add environmental noise
+dat = data.frame(g = apply(x*b, 1, sum))
+dat$e = rnorm(ninds, mean = 0, sd = sqrt(0.1))
+dat$y = dat$g + dat$e
+
+hist(dat$y)
+
+```
+
+
+Now for each variant, test if it is associated with the trait.
+
+
+```{r}
+
+b_hat = matrix(NA, nrow = 100, ncol = 2)
+for(i in 1:100){
+  l1 = lm(dat$y ~ x[,i])
+  b_hat[i,1] = summary(l1)$coefficients[2,1]
+  b_hat[i,2] = summary(l1)$coefficients[2,4]
+}
+
+#define p-value threshold to call a locus significantly associated with the trait
+pthresh = 0.05/100
+
+#which loci reach this threshold?
+which(b_hat[,2] < pthresh)
+
+```
+
+
+**Q.** Are all of them significant? Why did we use such a stringent threshold instead of 0.05?
+
+Repeat the last two blocks of code with a larger sample size. Start with 10,000 individuals, then 100,000 individuals.
+
+
+```{r}
+
+#code here
+
+```
+
+
+**Q.** Were you able to discover more? Why do you think that is? Were you able to discover any false positives?
+
+
+
+
+
+
+
+
+
+
