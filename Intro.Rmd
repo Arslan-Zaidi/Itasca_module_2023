@@ -24,7 +24,11 @@ We will use R inside Rstudio on the Cloud, which provides a user-friendly graphi
 
 To use Rstudio Cloud, visit https://posit.cloud/. Click on "Sign up", then "Learn More" under the "Free" option, and then finally "Sign up" again. Use either your GitHub or Google account to create an account and log in.
 
-You will be taken to "Your Workspace" where you will click on "New Project" and then "New Project from Git Repository". This will put you inside the "Itasca_module_2023" Project.
+You will be taken to "Your Workspace". To work on this project, simply paste the following link in your browser:
+
+https://posit.cloud/content/6226899
+
+And you will be taken to the project. First things first: you will notice "Temporary copy" in RED on the top. We need you to save a permanent copy first so you don't lose your work.
 
 You will see three windows. On your left will be the "Console", where you can run R commands directly. On your top right will be the "Environment", and on your bottom right will be the "Files", which lists all the files and directories inside the project. Click on "Intro.Rmd", which should open another window on your top left.
 
