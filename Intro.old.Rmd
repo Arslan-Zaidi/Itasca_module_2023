@@ -1,0 +1,507 @@
+---
+title: "A brief introduction to R"
+author: "Arslan A. Zaidi"
+date: "2023-07-17"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Setting up
+
+In this module, you will gain a basic introduction to R, the open-source, widely-used programming language commonly used for statistical analysis, and ggplot2, a popular library for plotting.
+
+You can download and learn more about R here:
+
+http://www.r-project.org
+
+We will use R inside Rstudio on the Cloud, which provides a user-friendly graphical interface with many other convenient functions.
+
+To use Rstudio Cloud, visit https://posit.cloud/. Click on "Sign up", then "Learn More" under the "Free" option, and then finally "Sign up" again. Use either your GitHub or Google account to create an account and log in.
+
+You will be taken to "Your Workspace". To work on this project, simply paste the following link in your browser:
+
+https://posit.cloud/content/6226899
+
+And you will be taken to the project. First things first: you will notice "Temporary copy" in RED on the top. We need you to save a permanent copy first so you don't lose your work.
+
+You will see three windows. On your left will be the "Console", where you can run R commands directly. On your top right will be the "Environment", and on your bottom right will be the "Files", which lists all the files and directories inside the project. Click on "Intro.Rmd", which should open another window on your top left.
+
+The file you just opened is an "Rmarkdown" file. It contains the text and code used to compile this tutorial. The code is shown in blocks encapsulated by three ticks. You can run the entire block of code by hitting the green "play" arrow at the top right of the code block. You can also run specific pieces of code by selecting it and hitting "command + enter". The code will output the results both in the markdown file and in the Console.
+
+You should follow the text, examine the code, and try to run it. Then, do the exercises yourself. I encourage you to partner up if necessary to help each other.
+
+# Basic R
+
+R can be used as a calculator:
+
+```{r}
+
+# addition; subtraction
+# you can write separate commands on the same line by using a semi-colon
+2+2; 4-4
+
+#multiplication
+8*9
+
+#division
+1e3/10
+
+#exponents and logs
+2^8; sqrt(256); log(100, base = 10); log(1, base = exp(1))
+
+#combination
+(2^8) / (sqrt(2)+2 +log(10))
+
+#You can try more by typing ?"/"
+
+```
+
+
+You can also assign values to variables and use those.
+
+```{r}
+
+a = 4+5; b = 2
+print(a)
+
+a*24
+
+a + b
+
+a^b
+
+#special variables and built-in constants
+exp(1); pi; pi-0.1341593; pi^2
+
+#variables don't just have to be numbers
+a = "Hello World"; a; print(a)
+
+
+```
+
+
+### Data structures
+
+R has the flexibility of working with different types of data structures such as vectors, matrices, lists, and data.frames. They have their different uses and pros and cons so I encourage you to read about them. I'll present a few examples here that are relevant to the workshop.
+
+```{r}
+
+####### Vectors ############
+# vectors are one-dimensional lists of elements
+# you can concatenate both characters and numbers using "c()"
+a = c(2, "f","hello",10)
+a
+
+# you can access specific elements of a vector using index
+a[3]; a[2:4]
+
+# changing an element
+a[3] = "bye"
+
+#you can also create numeric vectors easily
+b = c(1:10); d = c(1, 2, 10, 5:6)
+
+```
+
+
+```{r}
+
+########### Matrices ###########
+# matrices are two dimensional objects
+mat = matrix(c(1:20), 5, 4)
+mat
+
+#accessing specific rows and columns
+#first number indicates row and second number indicates column 
+mat[2,3]
+
+#accessing a row
+mat[4,]
+
+#accessing a column
+mat[,2]
+
+```
+
+
+```{r}
+
+########### Data frames ###########
+# data frames are more formatted tables with named columns
+dat <- data.frame (
+  Training = c("Strength", "Stamina", "Other"),
+  Pulse = c(100, 150, 120),
+  Duration = c(60, 30, 45)
+)
+
+dat
+
+# accessing specific columns
+dat$Training; dat['Training']
+
+# operating on a column
+dat$Duration/5
+
+```
+
+
+### Loops
+
+Loops are one of the most important things we can do in programming. We can automate a lot of things with loops.
+
+A loop involves some kind of counter to loop over and some action to be performed for each step of the counter. There are two main kinds of loops: "for" loops and "while" loops.
+
+```{r}
+
+#For loops translate to:
+for( i in 1:5 ){ #for values of i from 1 to 5
+  print(i^2) #print the square of i
+}
+
+#you can use any other letter besides i
+
+#We can also add conditions
+for( i in 1:5 ){
+  if( i < 2 ){ #if i is less than 2, then
+    print(i) #print i
+  }else{ #else
+    print(i + 1) #print i+1
+  }
+}
+
+#While loops keep on running until the condition is met
+i<-0 #set counter to some starting value
+while( i < 5 ){ #while counter is less than 5
+  print(i) #do something with it
+  i=i+1 #add i to counter
+}
+
+#this will keep going until i reaches 5. 
+#Use While loops reponsibly, they can get stuck in an infinite loop!
+
+
+```
+
+### Functions
+
+A function is a block of code which only runs when it is called. You can pass data, known as parameters, into a function. A function can return data as a result. 
+
+```{r}
+
+#Built-in functions
+max(0, 2, 5); min(0, 2, 5); mean(0:200)
+
+#the paste() function pastes characters with other characters or numbers
+paste("This is the square root of 2: ", sqrt(2), sep = "")
+
+#the length() function tells us the length of a vector
+length(a)
+
+
+```
+
+You can learn more about built-in functions simply by typing "?" followed by the function or "help" followed by the function. Try it.
+
+
+You can use one of the built-in functions or write your own.
+
+```{r}
+
+#Custom function 
+custom_function = function(x){
+  if(x < 100){
+    return(x)
+  }
+}
+
+custom_function(10); custom_function(100)
+
+```
+
+
+You can apply a function to a number of observations simultaneously, e.g. over the elements of a vector by using the "sapply" function, which supplies (haha get it) the function to all elements.
+
+```{r}
+
+#sapply requires 2 arguments
+#1. the vector to loop over
+#2. the function to apply - this could be a built-in or custom function
+a = c(1:10)
+b = sapply(a, custom_function)
+b
+
+```
+
+You can also apply functions to multiple columns or rows of a matrix or data frame using the "apply()" function.
+
+```{r}
+
+#apply takes three arguments.
+#1. the matrix or dataframe, 
+#2. the axis over which to apply function - 1 for rows, 2 for columns
+#3. function you want to apply. you can even use your own
+
+#calculate mean over rows of mat
+apply(mat, 1, mean)
+
+#calculate mean over columns of mat
+apply(mat, 2, mean)
+
+```
+
+
+
+### Logical operations
+
+Sometimes we need to check if something is true/false or meets a certain set of criteria. We can do this using logical operations such as:
+
+- "==" asks if the thing on the left hand is equal to the thing on the right hand
+- ">" asks if the thing on the left hand is greater than the thing on the right hand
+- "<" asks if the thing on the left hand is less than the thing on the right hand
+- "!=" asks if the thing on the left hand is not equal to the thing on the right hand
+
+```{r}
+
+#create vector of numbers from 1 to 5
+a = c(10, 150, 1.5, 30, 65, 300)
+
+#check IF numbers meet the following criterion. 
+#this will return a LOGICAL vector
+a > 100; a == 10
+
+#we can also get which element meets the criterion
+which(a > 100)
+
+#finally, let's get the value of the element which meets the criterion
+#this can be used to filer lists/vectors
+a[a > 100]
+
+```
+
+
+We can also specify multiple criterion using the following logical operators:
+
+- "&" (AND) means both criteria on either side must be met
+- "|" (OR) means either criteria must be met
+
+```{r}
+
+#AND
+a[(a > 100) & (a < 200)]
+
+#note how parantheses are useful for separating multiple operations
+
+#OR
+a[(a > 100) | ((a + 1) == 11)]
+
+```
+
+
+## Exercises
+
+**Q.** Compute $\frac{74+5}{(2.3)^5}$ and assign the name "calculation" to the result. Print "calculation".
+
+```{r}
+
+#code here
+
+```
+
+**Q.** Define a vector "months" containing the numbers 29, 63, 7, 23, 84, 10 and 9. Compute a vector "years" from it by dividing months by 12. Print "years".
+
+```{r}
+
+#code here
+
+```
+
+
+**Q.** In a fictitious medical study of 5 patients, participants should be excluded from the study if they weigh more than 90 kg or if they are either younger than 18 years or older than 60 years. Create vectors for the age and weight of participants as age = c(50, 17, 39, 27, 90) and weight = c(80, 75, 92, 105, 60). Then, answer which patients meet the specified criteria.
+
+```{r}
+
+#code here
+
+
+```
+
+
+**Q.** Can you answer the last question using a for loop?
+
+```{r}
+
+```
+
+R has some built-in datasets to play around with. Let's load one of these called mtcars using the "data()" function.
+
+```{r}
+
+#this will load the mtcars data frame into the environment window
+data(mtcars)
+
+#the head function shows you the first 6 rows
+head(mtcars)
+
+```
+
+**Q.** Access the mpg column and tell us how many cars have an mpg value of greater than 20.
+
+```{r}
+
+#code here
+
+```
+
+
+
+# Plotting
+
+R has basic plotting functionality. But we will use the ggplot package because it's much more flexible and let's face it, prettier. You can find more detailed information on [here](https://ggplot2-book.org/introduction.html).
+
+"All plots are composed of the data, the information you want to visualise, and a mapping, the description of how the data’s variables are mapped to aesthetic attributes. There are five mapping components:
+
+- A layer is a collection of geometric elements and statistical transformations. Geometric elements, geoms for short, represent what you actually see in the plot: points, lines, polygons, etc. Statistical transformations, stats for short, summarise the data: for example, binning and counting observations to create a histogram, or fitting a linear model.
+
+- Scales map values in the data space to values in the aesthetic space. This includes the use of colour, shape or size. Scales also draw the legend and axes, which make it possible to read the original data values from the plot (an inverse mapping).
+
+- A coord, or coordinate system, describes how data coordinates are mapped to the plane of the graphic. It also provides axes and gridlines to help read the graph. We normally use the Cartesian coordinate system, but a number of others are available, including polar coordinates and map projections.
+
+- A theme controls the finer points of display, like the font size and background colour."
+
+To load a package, use the library function. We will use the mpg package. It includes information about the fuel economy of popular car models in 1999 and 2008, collected by the US Environmental Protection Agency, http://fueleconomy.gov.
+
+
+```{r}
+
+library(ggplot2)
+
+data(mpg)
+
+head(mpg)
+
+```
+
+
+Every ggplot2 plot has three key components:
+
+- Data,
+
+- A set of aesthetic mappings between variables in the data and visual properties, and
+
+- At least one layer which describes how to render each observation. Layers are usually created with a geom function.
+
+Let's create a scatterplot: 
+
+Data: mpg.
+Aesthetic mapping: engine size mapped to x position, fuel economy to y position.
+Layer: points.
+
+```{r}
+
+
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+
+
+```
+
+
+Pay attention to the structure of this function call: data and aesthetic mappings are supplied in ggplot(), then layers are added on with +. This is an important pattern, and as you learn more about ggplot2 you’ll construct increasingly sophisticated plots by adding on more types of components.
+
+Almost every plot maps a variable to x and y, so naming these aesthetics is tedious, so the first two unnamed arguments to aes() will be mapped to x and y.
+
+geom_point() specifies the type of plot you want to create. In this case, a "point" plot or scatterplot. Other types are histograms, density plots, line plots, bar plots, pie charts, etc. The aes() call can be placed within the geom_ as well. In fact, I prefer to do it this way. Let's try the same plot without explicitly stating x and y and putting aes() inside geom_point().
+
+```{r}
+
+ggplot(mpg) + 
+  geom_point(aes(displ, hwy))
+
+
+```
+
+
+I hate the grey background. Let's change it and also edit the axis labels.
+
+
+```{r}
+
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Highway mileage") # axis labels
+
+```
+
+
+You can customize the color, shape, and transparency of the points as well, either for all of them or grouped one or more factors in the data frame.
+
+```{r}
+
+# if you want to change the color of ALL points, place "color" outside aes()
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy), 
+             color = "blue") + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Highway mileage") # axis labels
+
+#You can provide hex codes for the colors as well
+#I personally like getting these from https://colorbrewer2.org/
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy), 
+             color = "#a6bddb") + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Highway mileage") # axis labels
+
+#if you want to change the color of points by some factor, place "color" inside aes()
+ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy, color = class)) + 
+  theme_classic() + # change theme
+  labs(x = "Engine size", y = "Highway mileage") # axis labels
+
+```
+
+
+
+Let's try another plot - a histogram - of fuel economy. Histograms plot summarized data - the no. of observations within each bin. This calculation is all done automatically within ggplot. In contrast to scatterplots, histograms only require one variable, not both x and y.
+
+
+```{r}
+
+
+ggplot(mpg, aes(x = hwy)) + 
+  geom_histogram() + 
+  theme_classic() + # change theme
+  labs(x = "Highway mileage", y = "Count") # axis labels
+
+
+```
+
+## Exercises
+
+**Q.** Make a histogram for the "cty" variable - average city mileage. Label the axes correctly. 
+
+```{r}
+
+#code here
+
+```
+
+
+**Q.** Make a scatterplot between the "cty" variable and "hwy" variable. Label the axes correctly. Color the points by "drv" - the drive type. Describe the relationship between the variables. Is there a drive type that has a higher citywide and highway mileage? 
+
+```{r}
+
+#code here
+
+```
+
+You're done with the first part! To proceed, move on to the next part by saving and closing this .Rmd file and opening "PopGen.Rmd". Then go to "Session > Clear Workspace", followed by "Session > Restart R". See you there!
+
+
