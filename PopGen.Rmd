@@ -1,83 +1,163 @@
 ---
 title: "Part 2: Hardy-Weinberg equilibrium"
-author: "Arslan A. Zaidi"
-date: "2023-07-17"
+author: "Arslan A. Zaidi and PingHsun Hsieh"
+date: "2024-08-22"
 output:
   pdf_document: default
   html_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-```
+`{knitr::opts_chunk$set(echo = TRUE)} library(ggplot2)`
 
 # Introduction
 
-The purpose of this guide is to illustrate the Hardy-Wenberg principle through simulations in R. The guide assumes that you have a basic knowledge of genetics and have completed Part 1 of the module.
+The goal of this guide is to illustrate the Hardy-Wenberg principle through simulations in R. The guide assumes that you have a basic knowledge of genetics and have completed Part 1 of the module.
 
-# Some basic terminology 
+# Basic terminology
+
+*Null hypothesis:* In statistics, a null hypothesis posits that there is no significant difference between groups of outcome or observation.
 
 *Locus:* A position in the genome.
 
-*Allele:* A different variant at a locus. For example, you might carry the 'A' allele at a locus and someone else might carry the 'G' allele.
+*Allele:* A version of DNA at a locus. For example, you might carry the 'A' allele at a locus and someone else might carry the 'G' allele.
 
-*Ploidy:* The number of copies of a genome inside the cell of an organism. For example, we are diploid (i.e, have two copies of our genome)
+*Ploidy:* The number of copies of chromosomes in an organism. For example, humans are diploid (i.e, have two copies for each chromosomes)
 
-*Genotype:* The genetic makeup of an individual (e.g. 'AA', 'AG', or 'GG' for a diploid organism)
+*Genotype:* The genetic makeup at a locus (e.g. 'GG', 'AG', or 'AA' for a diploid organism)
 
-*Genotype frequency:* The fraction of individuals in the population with a particular genotype. For example, we refer to the proportion of individuals with the 'AG' genotype as $f_{AG} = \frac{N_{AG}}{N}$ where $N_{AG}$ is the number of individuals with the 'AG' genotype and $N$ is the total number of individuals in the population.
+*Genotype frequency:* The fraction of individuals in the population with a particular genotype. For example, the frequency of the 'AG' genotype is defined as $f_{AG} = \frac{N_{AG}}{N}$ where $N_{AG}$ is the number of individuals with the 'AG' genotype and $N$ is the total number of individuals in the population.
 
-*Allele frequency:* The no. of copies of an allele in the population. For example, the frequency of the 'A' allele is $f_{A}$. We can calculate this from the genotype frequency like so:
+*Allele frequency:* The number of a specific allele in the population. For example, the frequency of the 'A' allele is $f_{A}$. We can calculate this from the genotype frequency like so:
 
 $$ f_{A} = \frac{N_{Aa} + 2N_{AA}}{2N} $$
+
 **Q.** Can you figure out how we came up with this formula?
 
 **Q.** Can we do the reverse? Can we figure out the genotype frequency from the allele frequency?
 
-# Using allele frequency to predict genotype frequency
+# Hardy-Weinberg principle
 
-Let's test this out by simulating some genotypes in a population where the allele frequency is known. Assume the organism is diploid. Then, we need to do the following:
+As one of the most fundamental concepts in genetics, Hardy-Weinberg principle, also known as Hardy-Weinberg equilibrium (HWE), provides a simple null hypothesis asserting that in the absence of other evolutionary forces, allele and genotype frequencies in a population remain not change across generations.
 
-1. Draw one allele at random from the population with some probability. This probability is equal to the frequency of that allele in the population.
-2. Draw a second allele from the population with the same probability. 
-3. Combine the two alleles to create a genotype.
+The HWE rests on a number of **unrealistic** assumptions leading to an equilibrium state in a diploid population, including
 
-Let's try this. Assume the frequency of the A allele is 0.5. What's the frequency of the G allele?
+1)  an infinitely large population in which allele frequencies remain constant,
+
+2)  non-overlapping generations,
+
+3)  equal allele frequencies between males and females,
+
+4)  random mating,
+
+5)  the absence of new mutations,
+
+6)  the absence of selection, and
+
+7)  the absence of migration from other populations.
+
+The occurrence of one or more of these evolutionary events may lead to deviation from HWE. In other words, HWE allows for a simple test of whether evolutionary forces are acting on a specific locus; i.e., if observed and theoretical genotype frequencies are not significantly different, no evolutionary forces are acting on this locus; otherwise, one or more than one evolutionary forces are acting on the locus.
+
+# Allele frequency, genotype frequency, and HWE
+
+In the following exercises, we will demonstrate HWE through simulation, focusing on samples from a diploid population. We consider a single, bi-allelic locus (e.g., A and G alleles) with known allele frequencies within this population.
+
+Let's first begin to simulate genotypes for a sample of individuals from the population. The simulation involves three steps:
+
+1.  Draw an allele at random from the population with a probability equal to the frequency of that allele in the population.
+2.  Draw a second allele from the population with the same probability.
+3.  Combine the two alleles to create a genotype.
+
+Assuming the frequency of the A allele is fa, the frequency of the G allele is 1 - fa.
 
 ```{r}
 
-ninds = 10
-fa = 0.5
-fg = 1-fa
-# Since we are diploid, we will draw one allele at a time
-# we code the genotypes numerically for convenience: A -> 1 and G -> 0
-# This coding indicates the presence/absence of the A allele
+fa = 0.5    # frequency of A allele
+fg = 1-fa   # frequency of G allele
 
-# the sample function draws at random from the different choices given
-# based on some probability
-# Draw the first allele
+# For simplicity, we numerically code the alleles: A -> 1 and G -> 0
+# It is worth noting that this coding indicates the presence (1) or absence (0) of the A allele and that the three possible genotypes GG, GA, and AA are coded as 0, 1, and 2, respectively.
+
+# Given Mendel's law of independent assortment, we simulate a genotype for a diploid individual by two independent draws.
+
+# Draw the 1st allele for a sample of 10 individuals
+ninds = 10
+
 x1 = sample(c(0,1), 
             size = ninds, 
             replace = TRUE, 
-            prob = c(fa, fg))
+            prob = c(fg, fa))
 
-#second allele
+# Draw the 2nd allele for a sample of 10 individuals
 x2 = sample(c(0,1), 
             size = ninds, 
             replace = TRUE, 
-            prob = c(fa, fg))
+            prob = c(fg, fa))
 
-# Dipolid genotype = no. of copies (out of 2) of the A allele
-x = x1 + x2
+# Dipolid genotype of a individual = The number of A allele
+x = x1 + x2  # a vector of A allele counts for 10 individuals
 
 ```
 
 **Q.** Use your R skills to calculate the proportion of each genotype. Hint: you can use the "which()" and "length()" functions.
 
-**Q.** Is there a pattern? Why do you think that is? Does the result change if you rerun the last block of code? Does it change a lot or little?
+**Q.** Is there a pattern? Why do you think that is? Does the result change if you rerun the simulation? Does it change a lot or little?
 
-Try rerunning the last block of code a number of times with a larger sample size (N = 1,000).
+To better see the pattern, let's adopt a more systematic approach by running the simulation multiple times and then averaging across these replicates.
+
+We begin by rewriting the simulation code as a function so that we can run the same code multiple times without rerunning them individually. A function is declared by using the key word 'function' and could include 'argument(s)' for versatility. In this simulation, the arguments are the number of sampling individuals and the frequency of the A allele.
+
+```{r}
+
+# Begin of the function 'create_genotype'
+create_genotype = function(ninds, fa){
+
+  fg = 1-fa
+  x1 = sample(c(0,1), 
+              size = ninds, 
+              replace = TRUE, 
+              prob = c(fg, fa))
+  
+  x2 = sample(c(0,1), 
+              size = ninds, 
+              replace = TRUE, 
+              prob = c(fg, fa))
+  
+  x = x1 + x2
+  # provide an output using return()
+  # prop. of GG, GA, and AA genotypes
+  p.gg = mean(x == 0) # another way to calculate proportions
+  p.ga = mean(x == 1)
+  p.aa = mean(x == 2)
+  return(c(p.gg, p.ga, p.aa))
+}
+# End of function
+
+# Run the same simulation for 1,000 times and store the results as an 1000 x 3 matrix
+
+mat = NULL  # initialize an empty object for storing the outputs
+# rbind is a built-in R function that performs a row-binding operation 
+for (i in 1:1000){
+  mat = rbind(mat, create_genotype(fa = 0.5, ninds = 10))
+}
+
+# To view the first 10 rows of the matrix
+head(mat, n=10)
+
+```
+
+**Q.** Can you see a pattern?
+
+Now, let's compute the average proportions of invidiual genotypes
+
+```{r}
+#calculate the mean genotype across replicates
+apply(mat, 2, mean)
+
+```
+
+**Q.** Can you guess how these numbers might be related to the known allele frequency in the population?
+
+**Q.** Use the following code block to compute the average frequencies for the genotypes for a sample of 1,000 individuals over 1,000 replicates.
 
 ```{r}
 
@@ -85,114 +165,63 @@ Try rerunning the last block of code a number of times with a larger sample size
 
 ```
 
+**Q.** Do you observe any differences across the individual replicates and the average compared with the results of N=10? Can you explain the difference if any?
 
-**Q.** Is the pattern more apparent? Are the values more consistent? Why do you think that is? Do they converge to some particular set of values?
+## Visualizing genotype frequencies under HWE
 
-Let's do this more systematically by replicating the result multiple times and averaging over replicates. Let's also try a different starting allele frequency.
-
-```{r}
-
-# Let's run it a couple of times and store the result for each time
-
-# we can create less work for ourselves by writing 'functions'
-# functions are a convenient way to run the same thing multiple times
-# a function requires an 'argument' - something that we specify
-# in this case, the number of individuals and the allele frequency
-create_genotype = function(ninds, fa){
-
-  fg = 1-fa
-  x1 = sample(c(0,1), 
-              size = ninds, 
-              replace = TRUE, 
-              prob = c(fa, fg))
-  
-  x2 = sample(c(0,1), 
-              size = ninds, 
-              replace = TRUE, 
-              prob = c(fa, fg))
-  
-  x = x1 + x2
-  # provide an output using return()
-  #prop. of GG genotypes
-  n.gg = mean(x == 0) # another way to calculate proportions
-  n.ga = mean(x == 1)
-  n.aa = mean(x == 2)
-  return(c(n.gg, n.ga, n.aa))
-}
-
-# create an empty matrix to store results in
-# 1000 rows for replicates
-# 3 columns, one for each genotype
-mat = matrix(NA, nrow = 1000, ncol = 3)
-for(i in 1:1000){
-  #use the function to run the block of code
-  mat[i,] = create_genotype(fa = 0.1, ninds = 1000)
-}
-
-#calculate the mean genotype across replicates
-apply(mat, 2, mean)
-
-```
-
-
-**Q.** Is there a pattern? Can you guess how these numbers might be related to the allele frequency? Don't move on if you haven't figured this out yet.
-
-Let's try calculating the genotype frequencies for different allele frequencies and plotting the result.
+To have a more general view of HWE, we can compute genotype frequencies for different allele frequencies using Hardy-Weinberg principle and plot the results.
 
 ```{r}
 
-#setup a vector with allele frequencies ranging from 0 to 1
+# Make a vector of allele frequencies ranging from 0 to 1, with increments of 0.1.
 f = seq(0, 1, 0.1)
-mat = matrix(NA, nrow = length(f), ncol = 3)
+mat = NULL
+
 for(i in 1:length(f)){
-    mat[i,] = create_genotype(fa = f[i], ninds = 1000)
+    mat = rbind(
+                mat, create_genotype(fa = f[i], ninds = 1000)
+                )
 }
 
 #convert to dataframe
 mat = data.frame(mat)
 colnames(mat) = c("GG","GA","AA")
-mat$freq = f
+mat$alleleFreq = f
 
 #plot
 ggplot(mat)+
-  geom_line(aes(freq, GG), color = "blue")+
-  geom_line(aes(freq, GA), color = "green")+
-  geom_line(aes(freq, AA), color = "red")+
+  geom_line(aes(alleleFreq, GG), color = "blue")+
+  geom_line(aes(alleleFreq, GA), color = "green")+
+  geom_line(aes(alleleFreq, AA), color = "red")+
   theme_classic()+
   labs(x = "Frequency of A allele", 
        y = "Genotype frequency")
 
 ```
 
-**Q.** Take a look at this plot and describe what's going on.
+**Q.** How does this plot help explain HWE?
 
-That you can predict the genotype frequencies in a population from the allele frequencies is part of the Hardy-Weinberg equilibrium (HWE). Bet there's a blast from the past you never thought you'd be hearing again. This principle states that but if:
+In addition, we can add a plot for the expected curves of the GG, AG, and AA genotypes. Recall that the expected genotype frequencies given allele frequencies are: $f_{GG} = f_G^2$, $f_{GA} = 2f_Gf_A$, and $f_{AA} = f_A^2$.
 
-1. The population is mating randomly
-2. The population size is large 
-3. There is no mutation
-4. There is no natural selection
-
-Then, the frequency of the GG, AG, and AA genotypes are expected to be equal to: $f_{GG} = f_G^2$, $f_{GA} = 2f_Gf_A$, and $f_{AA} = f_A^2$. Since $f_A = 1 - f_G$, we can simplify this to: 
+Since $f_A = 1 - f_G$, we can simplify this to:
 
 $f_{GG} = (1 - f_A)^2$, $f_{GA} = 2f_A(1-f_G)$, and $f_{AA} = f_A^2$
 
-That's exactly what the lines in the previous plot show. Let's test this out by adding dotted lines to the previous plot 
-
+Let's add these as dotted lines to plot above.
 
 ```{r}
 
 #the alpha aesthetic makes the lines more transparent so we can see the dotted lines
 ggplot(mat)+
-  geom_line(aes(freq, GG), color = "blue", alpha = 0.1)+
-  geom_line(aes(freq, GA), color = "green", alpha = 0.1)+
-  geom_line(aes(freq, AA), color = "red", alpha = 0.1)+
-  geom_line(aes(freq, freq^2), 
-            color = "blue", linetype = "dotted")+
-  geom_line(aes(freq, 2*freq*(1-freq)), 
-            color = "green", linetype = "dotted")+
-  geom_line(aes(freq, (1-freq)^2), 
-            color = "red", linetype = "dotted")+
+  geom_line(aes(alleleFreq, GG), color = "darkblue", alpha = 0.5) +
+  geom_line(aes(alleleFreq, GA), color = "darkgreen", alpha = 0.5) +
+  geom_line(aes(alleleFreq, AA), color = "darkred", alpha = 0.5) +
+  geom_line(aes(alleleFreq, alleleFreq^2), 
+            color = "blue", linetype = "dashed")+
+  geom_line(aes(alleleFreq, 2*alleleFreq*(1-alleleFreq)), 
+            color = "green", linetype = "dashed")+
+  geom_line(aes(alleleFreq, (1-alleleFreq)^2), 
+            color = "red", linetype = "dashed")+
   theme_classic()+
   labs(x = "Frequency of A allele", 
        y = "Genotype frequency")
@@ -201,78 +230,20 @@ ggplot(mat)+
 
 ```
 
-**Q.** Do the observed genotype frequencies overlap with those predicted by HWE? 
+**Q.** How compatible are the observed genotype frequencies with those predicted by HWE?
 
-Try rerunning the last TWO blocks of code but with 10 individuals instead of 1,000.
+Now, in the following block, please make a similar plot but to N=10
 
 ```{r}
 
-#code here
-
-
-#setup a vector with allele frequencies ranging from 0 to 1
-f = seq(0, 1, 0.1)
-mat = matrix(NA, nrow = length(f), ncol = 3)
-for(i in 1:length(f)){
-    mat[i,] = create_genotype(fa = f[i], ninds = 10)
-}
-
-#convert to dataframe
-mat = data.frame(mat)
-colnames(mat) = c("GG","GA","AA")
-mat$freq = f
-
-ggplot(mat)+
-  geom_line(aes(freq, GG), color = "blue", alpha = 0.1)+
-  geom_line(aes(freq, GA), color = "green", alpha = 0.1)+
-  geom_line(aes(freq, AA), color = "red", alpha = 0.1)+
-  geom_line(aes(freq, freq^2), 
-            color = "blue", linetype = "dotted")+
-  geom_line(aes(freq, 2*freq*(1-freq)), 
-            color = "green", linetype = "dotted")+
-  geom_line(aes(freq, (1-freq)^2), 
-            color = "red", linetype = "dotted")+
-  theme_classic()+
-  labs(x = "Frequency of A allele", 
-       y = "Genotype frequency")
-
+# code here
 
 ```
 
 **Q.** What do you observe? Why do you think this is? Hint: this is related to one of the assumptions of HWE.
 
-You see, we can use mathematics to approximate what goes on in populations just like we did by approximating the expected genotype frequencies in the population from allele frequencies. Obviously, the assumptions are important and can sometimes breakdown. But first we must understand highly idealized situations as a place to start.
+# Summary
 
-The Hardy-Weinberg equilibrium does not only give us a way to predict genotype frequencies from allele frequencies but also predicts that allele frequencies will NOT change in populations over time if the four conditions are met. This again provides us a null model to study evolutionary processes, which are all about change!
+In this module, we demonstrated the use of mathematical modeling under simple assumptions to understand the relationship between allele and genotype frequencies in a population. The Hardy-Weinberg equilibrium not only provides a means to predict genotype frequencies from allele frequencies but also predicts that allele frequencies do NOT change in populations over time if the assumptions are met. Obviously, it is important to realize the assumptions of a model and its limits, but a model could provide a first approximation to real phenomena .
 
-The function we wrote to simulate genotypes based on allele frequencies is kind of clunky and R has built-in functions to do this: rbinom(). To simulate the (diploid) genotypes of 100 individuals from a population where the allele frequency is 0.15, we do the following:
-
-```{r}
-
-
-#rbinom takes 3 arguments
-#n = no. of individuals
-#size = ploidy
-#prob = allele frequency
-x = rbinom(100, 2, 0.15)
-
-#output the frequency of each genotype
-mean(x == 0)
-mean(x == 1)
-mean(x == 2)
-
-#OR we could use the table() function
-table(x)/100
-
-```
-
-
-Congrats, you're done with Part 2! You can move on to the 3rd part. As before, save your work, close "PopGen.Rmd", go to "Session > Clear Workspace", and then "Session > Restart R"
-
-
-
-
-
-
-
-
+Congrats, you're done with Part 2! To save your work, close "PopGen.Rmd", go to "Session \> Clear Workspace", and then "Session \> Restart R"
