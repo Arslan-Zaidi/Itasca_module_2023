@@ -204,10 +204,11 @@ for( i in 1:5 ){      # for values of i from 1 to 5
 
 # "while" loop, which keeps running until the condition is NOT met
 i = 0                 # set an initial value for the counter
-while( i < 5 ){       # exercute the code block while counter is less than 5
+while( i < 5 ){       # execute the code block while counter is less than 5
   print(i)            # do something with it
   i=i+1               # advance the counter by adding 1; 
-                      # if not included, this code block will enter an infinite loop so be very cautious when using a while loop!
+# if not included, this code block will enter an infinite loop so be very 
+  #cautious when using a while loop!
 }
 
 ```
@@ -223,7 +224,6 @@ if (a < b){
 } else{
     print ("a is greater than b")
   }
-}
   
 # Combine both loops and conditional statements
 for( i in 1:5 ){      # for values of i from 1 to 5
@@ -286,7 +286,7 @@ apply(mat, 1, function(x) sum(x)/length(x))   # x is a vector that contains the 
 
 ```
 
-**Q3.** Can you answer Q2 using `apply`without ?
+**Q3.** Can you answer Q2 using `apply`, i.e., without a loop?
 
 ```{r}
 
